@@ -8,7 +8,7 @@ userPhoto.src = customImgUrl ? decodeURIComponent(customImgUrl) : defaultDogImg;
 
 // 2. 상태 변수
 let currentState = 'IDLE'; 
-let setMinutes = 10;
+let setMinutes = 10; // 기본 10분
 let totalSeconds = setMinutes * 60;
 let timeRemaining = totalSeconds;
 let timerInterval = null;
@@ -34,7 +34,7 @@ function updateUI() {
     document.getElementById('screen').classList.toggle('flash', currentState === 'COMPLETE');
 
     if (currentState === 'IDLE') {
-        setupTimeText.textContent = setMinutes + "M"; // 10M 형식으로 표시
+        setupTimeText.textContent = setMinutes + "M";
     } else {
         const elapsedSeconds = totalSeconds - timeRemaining;
         elapsedTimeText.textContent = formatTime(elapsedSeconds);
@@ -45,26 +45,84 @@ function updateUI() {
     runningDisplay.style.opacity = (currentState === 'PAUSED') ? '0.5' : '1';
 }
 
-function startTimer() {
-    currentState = 'RUNNING';
-    updateUI();
-    timerInterval = setInterval(() => {
-        timeRemaining--;
-        updateUI();
-        if (timeRemaining <= 0) {
-            clearInterval(timerInterval);
-            currentState = 'COMPLETE';
-            updateUI();
-            setTimeout(resetTimer, 3000);
+// 3. 시간 조절 로직 (1, 5, 10, 15... 60)
+function adjustTime(direction) {
+    if (currentState !== 'IDLE') return;
+
+    if (direction === 'up') {
+        if (setMinutes === 1) {
+            setMinutes = 5;
+        } else if (setMinutes < 60) {
+            setMinutes += 5;
         }
-    }, 1000);
+    } else if (direction === 'down') {
+        if (setMinutes === 5) {
+            setMinutes = 1;
+        } else if (setMinutes > 5) {
+            setMinutes -= 5;
+        }
+    }
+
+    totalSeconds = setMinutes * 60;
+    timeRemaining = totalSeconds;
+    updateUI();
 }
 
-function pauseTimer() {
-    clearInterval(timerInterval);
-    currentState = 'PAUSED';
-    updateUI();
-}
+// --- 이벤트 리스너 ---
+document.getElementById('arrow-left').addEventListener('click', () => adjustTime('down'));
+document.getElementById('arrow-right').addEventListener('click', () => adjustTime('up'));
+document.querySelector('.btn-prev').addEventListener('click', () => adjustTime('down'));
+document.querySelector('.btn-next').addEventListener('click', () => adjustTime('up'));
+
+document.getElementById('btn-center').addEventListener('click', () => {
+    if (currentState === 'IDLE') {
+        currentState = 'RUNNING';
+        updateUI();
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            updateUI();
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                currentState = 'COMPLETE';
+                updateUI();
+                setTimeout(() => {
+                    clearInterval(timerInterval);
+                    currentState = 'IDLE';
+                    totalSeconds = setMinutes * 60;
+                    timeRemaining = totalSeconds;
+                    updateUI();
+                }, 3000);
+            }
+        }, 1000);
+    } else {
+        clearInterval(timerInterval);
+        currentState = 'IDLE';
+        totalSeconds = setMinutes * 60;
+        timeRemaining = totalSeconds;
+        updateUI();
+    }
+});
+
+document.getElementById('btn-play-pause').addEventListener('click', () => {
+    if (currentState === 'RUNNING') {
+        clearInterval(timerInterval);
+        currentState = 'PAUSED';
+        updateUI();
+    } else if (currentState === 'PAUSED') {
+        currentState = 'RUNNING';
+        updateUI();
+        timerInterval = setInterval(() => {
+            timeRemaining--;
+            updateUI();
+            if (timeRemaining <= 0) {
+                clearInterval(timerInterval);
+                currentState = 'COMPLETE';
+                updateUI();
+                setTimeout(() => { resetTimer(); }, 3000);
+            }
+        }, 1000);
+    }
+});
 
 function resetTimer() {
     clearInterval(timerInterval);
@@ -74,25 +132,4 @@ function resetTimer() {
     updateUI();
 }
 
-function adjustTime(amount) {
-    if (currentState !== 'IDLE') return;
-    setMinutes = Math.max(1, Math.min(60, setMinutes + amount));
-    totalSeconds = setMinutes * 60;
-    timeRemaining = totalSeconds;
-    updateUI();
-}
-
-document.getElementById('arrow-left').addEventListener('click', () => adjustTime(-5));
-document.getElementById('arrow-right').addEventListener('click', () => adjustTime(5));
-document.querySelector('.btn-prev').addEventListener('click', () => adjustTime(-5));
-document.querySelector('.btn-next').addEventListener('click', () => adjustTime(5));
-document.getElementById('btn-center').addEventListener('click', () => {
-    if (currentState === 'IDLE') startTimer();
-    else resetTimer();
-});
-document.getElementById('btn-play-pause').addEventListener('click', () => {
-    if (currentState === 'RUNNING') pauseTimer();
-    else if (currentState === 'PAUSED') startTimer();
-});
-
-resetTimer();
+updateUI();
