@@ -1,4 +1,3 @@
-// 1. 이미지 설정
 const urlParams = new URLSearchParams(window.location.search);
 const customImgUrl = urlParams.get('img');
 const defaultDogImg = "dog.jpg"; 
@@ -6,9 +5,8 @@ const defaultDogImg = "dog.jpg";
 const userPhoto = document.getElementById('user-photo');
 userPhoto.src = customImgUrl ? decodeURIComponent(customImgUrl) : defaultDogImg;
 
-// 2. 상태 변수
 let currentState = 'IDLE'; 
-let setMinutes = 10; // 기본 10분
+let setMinutes = 10;
 let totalSeconds = setMinutes * 60;
 let timeRemaining = totalSeconds;
 let timerInterval = null;
@@ -45,22 +43,16 @@ function updateUI() {
     runningDisplay.style.opacity = (currentState === 'PAUSED') ? '0.5' : '1';
 }
 
-// 3. 시간 조절 로직 (1, 5, 10, 15... 60)
+// 시간 조절 로직 수정: 1, 5, 10, 15...60
 function adjustTime(direction) {
     if (currentState !== 'IDLE') return;
 
-    if (direction === 'up') {
-        if (setMinutes === 1) {
-            setMinutes = 5;
-        } else if (setMinutes < 60) {
-            setMinutes += 5;
-        }
-    } else if (direction === 'down') {
-        if (setMinutes === 5) {
-            setMinutes = 1;
-        } else if (setMinutes > 5) {
-            setMinutes -= 5;
-        }
+    if (direction > 0) { // 시간 증가
+        if (setMinutes === 1) setMinutes = 5;
+        else if (setMinutes < 60) setMinutes += 5;
+    } else { // 시간 감소
+        if (setMinutes === 5) setMinutes = 1;
+        else if (setMinutes > 5) setMinutes -= 5;
     }
 
     totalSeconds = setMinutes * 60;
@@ -68,61 +60,40 @@ function adjustTime(direction) {
     updateUI();
 }
 
-// --- 이벤트 리스너 ---
-document.getElementById('arrow-left').addEventListener('click', () => adjustTime('down'));
-document.getElementById('arrow-right').addEventListener('click', () => adjustTime('up'));
-document.querySelector('.btn-prev').addEventListener('click', () => adjustTime('down'));
-document.querySelector('.btn-next').addEventListener('click', () => adjustTime('up'));
+document.getElementById('arrow-left').addEventListener('click', () => adjustTime(-1));
+document.getElementById('arrow-right').addEventListener('click', () => adjustTime(1));
+document.querySelector('.btn-prev').addEventListener('click', () => adjustTime(-1));
+document.querySelector('.btn-next').addEventListener('click', () => adjustTime(1));
 
 document.getElementById('btn-center').addEventListener('click', () => {
-    if (currentState === 'IDLE') {
-        currentState = 'RUNNING';
-        updateUI();
-        timerInterval = setInterval(() => {
-            timeRemaining--;
-            updateUI();
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                currentState = 'COMPLETE';
-                updateUI();
-                setTimeout(() => {
-                    clearInterval(timerInterval);
-                    currentState = 'IDLE';
-                    totalSeconds = setMinutes * 60;
-                    timeRemaining = totalSeconds;
-                    updateUI();
-                }, 3000);
-            }
-        }, 1000);
-    } else {
-        clearInterval(timerInterval);
-        currentState = 'IDLE';
-        totalSeconds = setMinutes * 60;
-        timeRemaining = totalSeconds;
-        updateUI();
-    }
+    if (currentState === 'IDLE') startTimer();
+    else resetTimer();
+});
+document.getElementById('btn-play-pause').addEventListener('click', () => {
+    if (currentState === 'RUNNING') pauseTimer();
+    else if (currentState === 'PAUSED') startTimer();
 });
 
-document.getElementById('btn-play-pause').addEventListener('click', () => {
-    if (currentState === 'RUNNING') {
-        clearInterval(timerInterval);
-        currentState = 'PAUSED';
+function startTimer() {
+    currentState = 'RUNNING';
+    updateUI();
+    timerInterval = setInterval(() => {
+        timeRemaining--;
         updateUI();
-    } else if (currentState === 'PAUSED') {
-        currentState = 'RUNNING';
-        updateUI();
-        timerInterval = setInterval(() => {
-            timeRemaining--;
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            currentState = 'COMPLETE';
             updateUI();
-            if (timeRemaining <= 0) {
-                clearInterval(timerInterval);
-                currentState = 'COMPLETE';
-                updateUI();
-                setTimeout(() => { resetTimer(); }, 3000);
-            }
-        }, 1000);
-    }
-});
+            setTimeout(resetTimer, 3000);
+        }
+    }, 1000);
+}
+
+function pauseTimer() {
+    clearInterval(timerInterval);
+    currentState = 'PAUSED';
+    updateUI();
+}
 
 function resetTimer() {
     clearInterval(timerInterval);
@@ -132,4 +103,4 @@ function resetTimer() {
     updateUI();
 }
 
-updateUI();
+resetTimer();
