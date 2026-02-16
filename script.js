@@ -58,14 +58,10 @@ function adjustTime(direction) {
     updateUI();
 }
 
-// --- MENU 버튼: 무조건 10분으로 초기화 ---
-document.getElementById('btn-menu').addEventListener('click', () => {
-    clearInterval(timerInterval);
-    currentState = 'IDLE';
-    setMinutes = 10; // 10분으로 강제 설정
-    totalSeconds = setMinutes * 60;
-    timeRemaining = totalSeconds;
-    updateUI();
+// MENU 버튼 클릭 시 10분으로 리셋
+document.querySelector('.btn-menu').addEventListener('click', () => {
+    setMinutes = 10; // 기본값인 10분으로 설정
+    resetTimer();    // 타이머 초기화 함수 실행
 });
 
 document.getElementById('arrow-left').addEventListener('click', () => adjustTime(-1));
@@ -113,3 +109,4 @@ function resetTimer() {
 }
 
 resetTimer();
+
