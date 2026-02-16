@@ -9,11 +9,10 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-color: transparent; /* 배경 투명 */
+    background-color: transparent;
     font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* 본체 크기 고정 (330px) */
 .ipod-body {
     width: 330px;
     height: 170px;
@@ -26,7 +25,6 @@ body {
     gap: 10px;
 }
 
-/* 화면 영역 */
 .screen-container {
     flex: 1.4;
     height: 90%;
@@ -51,35 +49,28 @@ body {
     color: #fff; padding: 5px;
 }
 
-/* 초기 시간 선택 (◀   10M   ▶) */
 .setup-display {
-    font-size: 1.1rem; /* 글씨 크기 추가 축소 */
+    font-size: 1.1rem;
     font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 35px; /* 자간(간격) 더 넓힘 */
+    gap: 35px;
     z-index: 2;
 }
 
-/* 화살표 스타일: 글씨보다 작지만 클릭 영역은 확보 */
 .arrow { 
     cursor: pointer; 
     color: #666; 
-    font-size: 0.7rem; /* 화살표 크기 축소 */
+    font-size: 0.7rem;
     user-select: none; 
-    transition: color 0.2s;
-    
-    /* 선택 범위를 정원 방향으로 글씨와 비슷한 크기로 설정 */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px; 
-    height: 30px;
+    width: 30px; height: 30px;
     border-radius: 50%;
 }
 .arrow:hover { color: #fff; background-color: rgba(255, 255, 255, 0.1); }
 
-/* 작동 화면 */
 .running-display {
     width: 100%; height: 100%;
     display: none; flex-direction: column;
@@ -104,28 +95,74 @@ body {
 .progress-container { flex: 1; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; overflow: hidden; }
 .progress-bar { width: 0%; height: 100%; background: #50b0f0; }
 
-/* 완료 문구 */
 .complete-text { font-size: 1.1rem; font-weight: bold; display: none; z-index: 5; color: #fff; }
 .flash { animation: blink 0.5s 6 alternate; }
 @keyframes blink { 0% {opacity:1;} 100% {opacity:0;} }
 
-/* 클릭 휠 */
-.wheel-container { flex: 1; display: flex; justify-content: center; }
+/* 클릭 휠 디자인 수정 */
 .click-wheel {
     width: 120px; height: 120px;
     background: #fcfcfc; border-radius: 50%;
     position: relative; display: flex; justify-content: center; align-items: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.wheel-btn { position: absolute; color: #888; font-size: 0.6rem; font-weight: bold; cursor: pointer; }
-.btn-menu { top: 10px; }
-.btn-prev { left: 8px; }
-.btn-next { right: 8px; }
-.btn-play-pause { bottom: 10px; }
+
+/* 버튼 텍스트를 더 두껍고 선명하게 수정 */
+/* 기존 .wheel-btn 스타일은 그대로 두고 아래 내용을 추가하거나 수정하세요 */
+
+.wheel-btn { 
+    position: absolute; 
+    color: #8888; 
+    font-size: 0.56rem; 
+    font-weight: 800; /* 기본 화살표 두께는 적당히 유지 */
+    cursor: pointer; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 왼쪽 버튼 전용: 막대를 오른쪽(화살표 방향)으로 당김 */
+.btn-prev .thick-bar {
+    margin-right: -2px; /* 간격을 봐서 -1px ~ -3px 사이로 조절하세요 */
+}
+
+/* 오른쪽 버튼 전용: 막대를 왼쪽(화살표 방향)으로 당김 */
+.btn-next .thick-bar {
+    margin-left: 0px;  /* 오른쪽도 미세하게 조정하여 대칭을 맞춤 */
+}
+
+/* 화살표 뭉치 공통: 불필요한 마진 제거 */
+.tight-arrows {
+    letter-spacing: -2px;
+    display: inline-block;
+    margin: 0 1px;
+}
+
+/* 막대기 부분만 아주 두껍게 설정 */
+.thick-bar {
+    font-weight: 900;      /* 가장 두껍게 */
+    /* 글자 테두리를 입혀서 강제로 두껍게 만들기 (0.5px 정도 추가) */
+    -webkit-text-stroke: 0.5px #8888;
+    font-size: 0.55rem;    /* 막대만 살짝 키우면 더 강조됨 */
+    margin: 0 1px;       /* 화살표와의 간격이 너무 넓으면 음수값으로 조절 */
+
+    display: inline-block;
+}.btn-menu { top: 8px; }
+.btn-prev { left: 10px; }
+.btn-next { right: 10px; }
+.btn-play-pause { bottom: 8px; }
+
+/* 가운데 버튼: 오목하게 들어간 음영 효과 추가 */
 .center-button {
     width: 45px; height: 45px;
-    background: radial-gradient(circle at 30% 30%, #eee, #ccc);
+    background: radial-gradient(circle at 50% 50%, #f0f0f0, #d8d8d8);
     border-radius: 50%; cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    /* 바깥쪽 그림자와 안쪽(inset) 그림자를 섞어 오목한 느낌 구현 */
+    box-shadow: 
+        inset 0 10px 10px rgba(0,0,0,0.1), 
+        0 1px 1px rgba(0,0,0,0.2);
 }
-.center-button:active { background: #bbb; }
+.center-button:active { 
+    background: #ccc;
+    box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
+}
