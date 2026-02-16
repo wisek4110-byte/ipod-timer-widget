@@ -1,7 +1,6 @@
 // 1. 이미지 설정
 const urlParams = new URLSearchParams(window.location.search);
 const customImgUrl = urlParams.get('img');
-// 본인이 업로드한 dog.jpg를 기본값으로 설정
 const defaultDogImg = "dog.jpg"; 
 
 const userPhoto = document.getElementById('user-photo');
@@ -35,7 +34,7 @@ function updateUI() {
     document.getElementById('screen').classList.toggle('flash', currentState === 'COMPLETE');
 
     if (currentState === 'IDLE') {
-        setupTimeText.textContent = setMinutes; // 'M' 제거하고 숫자만 표시
+        setupTimeText.textContent = setMinutes + "M"; // 10M 형식으로 표시
     } else {
         const elapsedSeconds = totalSeconds - timeRemaining;
         elapsedTimeText.textContent = formatTime(elapsedSeconds);
