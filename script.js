@@ -1,8 +1,12 @@
-// 1. URL 파라미터에서 이미지 주소 읽기
+// 1. 이미지 설정 (기본 강아지 사진 + URL 파라미터 지원)
 const urlParams = new URLSearchParams(window.location.search);
-const customImgUrl = urlParams.get('img'); // 링크 끝에 ?img=주소 가 있는지 확인
+const customImgUrl = urlParams.get('img');
+const defaultDogImg = "dog.jpg";
 
-// 2. 상태 변수 설정
+const userPhoto = document.getElementById('user-photo');
+userPhoto.src = customImgUrl ? decodeURIComponent(customImgUrl) : defaultDogImg;
+
+// 2. 상태 변수
 let currentState = 'IDLE'; 
 let setMinutes = 10;
 let totalSeconds = setMinutes * 60;
@@ -19,31 +23,18 @@ const totalTimeText = document.getElementById('total-time');
 const progressBar = document.getElementById('progress-bar');
 const completeText = document.getElementById('complete-text');
 const photoWrapper = document.querySelector('.photo-wrapper');
-const userPhoto = document.getElementById('user-photo');
 
-// 4. 이미지 설정 (파라미터가 없으면 기본 강아지 사진 사용)
-const defaultDogImg = "https://images.unsplash.com/photo-1517849845537-4d257902454a?q=80&w=400&auto=format&fit=crop";
-
-if (customImgUrl) {
-    userPhoto.src = decodeURIComponent(customImgUrl); // 사용자가 입력한 주소 적용
-} else {
-    userPhoto.src = defaultDogImg; // 기본 강아지 사진 적용
-}
-
-// 5. 시간을 MM:SS 형식으로 변환하는 함수
+// 4. 시간 포맷 함수 (MM:SS)
 function formatTime(seconds) {
     const m = Math.floor(seconds / 60).toString().padStart(2, '0');
     const s = (seconds % 60).toString().padStart(2, '0');
     return `${m}:${s}`;
 }
 
-// 6. 화면 UI 업데이트 함수
+// 5. 화면 업데이트 로직
 function updateUI() {
-    // 상태에 따른 화면 전환
     setupDisplay.style.display = (currentState === 'IDLE') ? 'flex' : 'none';
     runningDisplay.style.display = (currentState === 'RUNNING' || currentState === 'PAUSED') ? 'flex' : 'none';
-    
-    // 완료 문구 처리
     completeText.style.display = (currentState === 'COMPLETE') ? 'block' : 'none';
     photoWrapper.style.opacity = (currentState === 'COMPLETE') ? '0' : '1';
     screen.classList.toggle('flash', currentState === 'COMPLETE');
@@ -54,24 +45,25 @@ function updateUI() {
         const elapsedSeconds = totalSeconds - timeRemaining;
         elapsedTimeText.textContent = formatTime(elapsedSeconds);
         totalTimeText.textContent = formatTime(totalSeconds);
-
-        if (totalSeconds > 0) {
-            const percentage = (elapsedSeconds / totalSeconds) * 100;
-            progressBar.style.width = `${percentage}%`;
-        }
+        const percentage = totalSeconds > 0 ? (elapsedSeconds / totalSeconds) * 100 : 0;
+        progressBar.style.width = `${percentage}%`;
     }
-    
     runningDisplay.style.opacity = (currentState === 'PAUSED') ? '0.5' : '1';
 }
 
-// 7. 타이머 제어 함수
+// 6. 타이머 제어
 function startTimer() {
     currentState = 'RUNNING';
     updateUI();
     timerInterval = setInterval(() => {
         timeRemaining--;
         updateUI();
-        if (timeRemaining <= 0) completeTimer();
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            currentState = 'COMPLETE';
+            updateUI();
+            setTimeout(resetTimer, 3000);
+        }
     }, 1000);
 }
 
@@ -89,15 +81,7 @@ function resetTimer() {
     updateUI();
 }
 
-function completeTimer() {
-    clearInterval(timerInterval);
-    currentState = 'COMPLETE';
-    timeRemaining = 0;
-    updateUI();
-    setTimeout(resetTimer, 3000);
-}
-
-// 8. 버튼 이벤트 연결
+// 7. 버튼 이벤트
 function adjustTime(amount) {
     if (currentState !== 'IDLE') return;
     setMinutes = Math.max(1, Math.min(60, setMinutes + amount));
@@ -121,5 +105,5 @@ document.getElementById('btn-play-pause').addEventListener('click', () => {
     else if (currentState === 'PAUSED') startTimer();
 });
 
-// 초기 실행
+// 초기화 실행
 resetTimer();
