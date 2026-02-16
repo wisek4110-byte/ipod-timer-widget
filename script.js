@@ -43,22 +43,30 @@ function updateUI() {
     runningDisplay.style.opacity = (currentState === 'PAUSED') ? '0.5' : '1';
 }
 
-// 시간 조절 로직 수정: 1, 5, 10, 15...60
+// 시간 조절 로직
 function adjustTime(direction) {
     if (currentState !== 'IDLE') return;
-
-    if (direction > 0) { // 시간 증가
+    if (direction > 0) {
         if (setMinutes === 1) setMinutes = 5;
         else if (setMinutes < 60) setMinutes += 5;
-    } else { // 시간 감소
+    } else {
         if (setMinutes === 5) setMinutes = 1;
         else if (setMinutes > 5) setMinutes -= 5;
     }
-
     totalSeconds = setMinutes * 60;
     timeRemaining = totalSeconds;
     updateUI();
 }
+
+// --- MENU 버튼: 무조건 10분으로 초기화 ---
+document.getElementById('btn-menu').addEventListener('click', () => {
+    clearInterval(timerInterval);
+    currentState = 'IDLE';
+    setMinutes = 10; // 10분으로 강제 설정
+    totalSeconds = setMinutes * 60;
+    timeRemaining = totalSeconds;
+    updateUI();
+});
 
 document.getElementById('arrow-left').addEventListener('click', () => adjustTime(-1));
 document.getElementById('arrow-right').addEventListener('click', () => adjustTime(1));
@@ -69,6 +77,7 @@ document.getElementById('btn-center').addEventListener('click', () => {
     if (currentState === 'IDLE') startTimer();
     else resetTimer();
 });
+
 document.getElementById('btn-play-pause').addEventListener('click', () => {
     if (currentState === 'RUNNING') pauseTimer();
     else if (currentState === 'PAUSED') startTimer();
