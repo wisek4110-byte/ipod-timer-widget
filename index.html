@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPod Classic Style Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="ipod-body">
+        
+        <div class="screen-container">
+            <div class="screen-glare"></div>
+            
+            <div class="screen" id="screen">
+                
+                <div class="setup-display" id="setup-display">
+                    <span class="arrow" id="arrow-left">◀</span>
+                    <span id="setup-time-text">10M</span>
+                    <span class="arrow" id="arrow-right">▶</span>
+                </div>
+
+                <div class="running-display" id="running-display">
+                    
+                    <div class="photo-wrapper">
+                        <img src="dog.jpg" alt="User Photo" class="user-photo" id="user-photo">
+                    </div>
+
+                    <div class="progress-area">
+                        <span class="time-text" id="elapsed-time">00:00</span>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="progress-bar"></div>
+                        </div>
+                        <span class="time-text" id="total-time">10:00</span>
+                    </div>
+
+                </div>
+
+                <div class="complete-text" id="complete-text">COMPLETE!</div>
+            </div>
+        </div>
+
+        <div class="wheel-container">
+            <div class="click-wheel">
+                <div class="wheel-btn btn-menu">MENU</div>
+                <div class="wheel-btn btn-prev">|◀◀</div>
+                <div class="wheel-btn btn-next">▶▶|</div>
+                <div class="wheel-btn btn-play-pause" id="btn-play-pause">▶||</div>
+                
+                <div class="center-button" id="btn-center"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
