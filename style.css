@@ -58,6 +58,13 @@ body {
     z-index: 2;
 }
 
+/* 글자가 움직일 때 양옆 화살표가 덜컹거리지 않도록 너비 고정 */
+#setup-time-text {
+    display: inline-block;
+    width: 45px;
+    text-align: center;
+}
+
 .arrow { 
     cursor: pointer; 
     color: #666; 
@@ -83,7 +90,7 @@ body {
     border-radius: 0px;
     overflow: hidden;
     box-shadow: 0 3px 6px rgba(0,0,0,0.5);
-margin-top: 10px; /* 숫자가 커질수록 사진이 더 아래로 내려갑니다 */
+    margin-top: 10px; 
 }
 .user-photo { width: 100%; height: 100%; object-fit: cover; }
 
@@ -108,57 +115,41 @@ margin-top: 10px; /* 숫자가 커질수록 사진이 더 아래로 내려갑니
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* 버튼 텍스트를 더 두껍고 선명하게 수정 */
-/* 기존 .wheel-btn 스타일은 그대로 두고 아래 내용을 추가하거나 수정하세요 */
-
 .wheel-btn { 
     position: absolute; 
     color: #8888; 
     font-size: 0.56rem; 
-    font-weight: 800; /* 기본 화살표 두께는 적당히 유지 */
+    font-weight: 800; 
     cursor: pointer; 
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* 왼쪽 버튼 전용: 막대를 오른쪽(화살표 방향)으로 당김 */
-.btn-prev .thick-bar {
-    margin-right: -2px; /* 간격을 봐서 -1px ~ -3px 사이로 조절하세요 */
-}
-
-/* 오른쪽 버튼 전용: 막대를 왼쪽(화살표 방향)으로 당김 */
-.btn-next .thick-bar {
-    margin-left: 0px;  /* 오른쪽도 미세하게 조정하여 대칭을 맞춤 */
-}
-
-/* 화살표 뭉치 공통: 불필요한 마진 제거 */
+.btn-prev .thick-bar { margin-right: -2px; }
+.btn-next .thick-bar { margin-left: 0px; }
 .tight-arrows {
     letter-spacing: -2px;
     display: inline-block;
     margin: 0 1px;
 }
 
-/* 막대기 부분만 아주 두껍게 설정 */
 .thick-bar {
-    font-weight: 900;      /* 가장 두껍게 */
-    /* 글자 테두리를 입혀서 강제로 두껍게 만들기 (0.5px 정도 추가) */
+    font-weight: 900;
     -webkit-text-stroke: 0.5px #8888;
-    font-size: 0.55rem;    /* 막대만 살짝 키우면 더 강조됨 */
-    margin: 0 1px;       /* 화살표와의 간격이 너무 넓으면 음수값으로 조절 */
-
+    font-size: 0.55rem;
+    margin: 0 1px;
     display: inline-block;
-}.btn-menu { top: 8px; }
+}
+.btn-menu { top: 8px; }
 .btn-prev { left: 10px; }
 .btn-next { right: 10px; }
 .btn-play-pause { bottom: 8px; }
 
-/* 가운데 버튼: 오목하게 들어간 음영 효과 추가 */
 .center-button {
     width: 45px; height: 45px;
     background: radial-gradient(circle at 50% 50%, #f0f0f0, #d8d8d8);
     border-radius: 50%; cursor: pointer;
-    /* 바깥쪽 그림자와 안쪽(inset) 그림자를 섞어 오목한 느낌 구현 */
     box-shadow: 
         inset 0 10px 10px rgba(0,0,0,0.1), 
         0 1px 1px rgba(0,0,0,0.2);
@@ -168,4 +159,14 @@ margin-top: 10px; /* 숫자가 커질수록 사진이 더 아래로 내려갑니
     box-shadow: inset 0 3px 5px rgba(0,0,0,0.2);
 }
 
-
+/* --- 추가된 시간 조정 슬라이드 애니메이션 --- */
+@keyframes slideInRight {
+    0% { transform: translateX(15px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideInLeft {
+    0% { transform: translateX(-15px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+.slide-next-anim { animation: slideInRight 0.15s ease-out; }
+.slide-prev-anim { animation: slideInLeft 0.15s ease-out; }
